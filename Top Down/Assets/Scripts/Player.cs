@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
+
     public Material alive;
     public Material dead;
     public Renderer rend;
@@ -13,7 +14,7 @@ public class Player : MonoBehaviour
     public float magicForce;
     public int speed;
     public int playerAttack;
-    public float playerAttackCritChance;
+    public float critChancePercentFormAttack;
     public int percentsToplayerAttackCritChance = 20;
     public int defend;
     public float maxPlayerHP=500;
@@ -82,9 +83,10 @@ public class Player : MonoBehaviour
     void ShootMagic()
     {
         int critAttack = Random.Range(1, 101);
-        if (critAttack >= percentsToplayerAttackCritChance)
+        if (critAttack <= percentsToplayerAttackCritChance)
         {
-            float newAttack = playerAttack * playerAttackCritChance;
+            float newAttack = playerAttack / critChancePercentFormAttack;
+            newAttack += playerAttack;
         }
         GameObject magic = Instantiate(magicPref, firePoint.position, firePoint.rotation);
         Rigidbody rbMagic = magic.GetComponent<Rigidbody>();
@@ -98,7 +100,7 @@ public class Player : MonoBehaviour
     }
 
 
-    void TakeHpFromPlayer(int damage)
+    public void TakeHpFromPlayer(int damage)
     {
         currentPlayerHP -= damage;
         playerHealthBar.SetHealth(currentPlayerHP);

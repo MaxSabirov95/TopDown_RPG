@@ -5,9 +5,10 @@ using UnityEngine.UI;
 
 public class PlayerUI : MonoBehaviour
 {
-    public Text timer;
-    public float timerTime=10;
     public Button spawnButton;
+    public Text timer;
+    public float timerTime=5;
+    float newTimerTime;
 
     int maxPlayerXP;
     public int currentPlayerXP;
@@ -17,6 +18,7 @@ public class PlayerUI : MonoBehaviour
     void Start()
     {
         spawnButton.gameObject.SetActive(false);
+        newTimerTime = timerTime;
         playerXPBar.SetXP(currentPlayerXP);
     }
 
@@ -25,13 +27,13 @@ public class PlayerUI : MonoBehaviour
         if (BlackBoard.player.isDead)
         {
             timer.gameObject.SetActive(true);
-            timer.text = "You are Dead! Please wait " + timerTime.ToString("f0") + " Seconds To Spawn";
-            timerTime-=Time.deltaTime;
-            if (timerTime <= 0)
+            timer.text = "You are Dead! Please wait " + newTimerTime.ToString("f0") + " Seconds To Spawn";
+            newTimerTime -= Time.deltaTime;
+            if (newTimerTime <= 0)
             {
-                timer.text = "You Can Spawn";
                 timerTime = Mathf.Clamp(timerTime, 0, timerTime);
                 spawnButton.gameObject.SetActive(true);
+                timer.text = "You can spawn";
             }
         }
 
@@ -49,6 +51,7 @@ public class PlayerUI : MonoBehaviour
 
     public void RespawnPlayer()
     {
+        spawnButton.gameObject.SetActive(false);
         timer.gameObject.SetActive(false);
         BlackBoard.player.isDead = false;
         BlackBoard.player.currentPlayerHP = BlackBoard.player.maxPlayerHP * 0.5f;
@@ -56,7 +59,17 @@ public class PlayerUI : MonoBehaviour
         BlackBoard.player.rend = GetComponent<Renderer>();
         BlackBoard.player.rend.enabled = true;
         BlackBoard.player.rend.sharedMaterial = BlackBoard.player.alive;
-        spawnButton.gameObject.SetActive(false);
-        timerTime = 10;
+        if(timerTime < 60)
+        {
+            if (timerTime >= 30)
+            {
+                timerTime += 2;
+            }
+            else
+            {
+                timerTime += 5;
+            }
+        }
+        newTimerTime = timerTime;
     }
 }
