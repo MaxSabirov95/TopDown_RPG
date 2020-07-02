@@ -17,9 +17,9 @@ public class PlayerUI : MonoBehaviour
 
     void Start()
     {
-        spawnButton.gameObject.SetActive(false);
+        //spawnButton.gameObject.SetActive(false);
         newTimerTime = timerTime;
-        playerXPBar.SetXP(currentPlayerXP);
+        //playerXPBar.SetXP(currentPlayerXP);
     }
 
     void Update()
@@ -56,9 +56,9 @@ public class PlayerUI : MonoBehaviour
         BlackBoard.player.isDead = false;
         BlackBoard.player.currentPlayerHP = BlackBoard.player.maxPlayerHP * 0.5f;
         BlackBoard.player.playerHealthBar.SetHealth(BlackBoard.player.currentPlayerHP);
-        BlackBoard.player.rend = GetComponent<Renderer>();
-        BlackBoard.player.rend.enabled = true;
-        BlackBoard.player.rend.sharedMaterial = BlackBoard.player.alive;
+        //BlackBoard.player.rend = GetComponent<Renderer>();
+        //BlackBoard.player.rend.enabled = true;
+        //BlackBoard.player.rend.sharedMaterial = BlackBoard.player.alive;
         if(timerTime < 60)
         {
             if (timerTime >= 30)

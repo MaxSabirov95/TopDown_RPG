@@ -5,10 +5,10 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-
+    public Animator anim;
     public Material alive;
     public Material dead;
-    public Renderer rend;
+    //public Renderer rend;
     public GameObject magicPref;
     public Transform firePoint;
     public float magicForce;
@@ -19,12 +19,14 @@ public class Player : MonoBehaviour
     public int defend;
     public float maxPlayerHP=500;
     public float currentPlayerHP;
+    float horizontalMove;
+    float verticalMove;
 
     Camera cam;
     public PlayerHealthBar playerHealthBar;
 
     private Rigidbody rb;
-    private Vector3 movement;
+    //private Vector3 movement;
     private float rayLength;
     public bool isDead;
 
@@ -37,11 +39,11 @@ public class Player : MonoBehaviour
     private void Start()
     {
         isDead = false;
-        rend = GetComponent<Renderer>();
-        rend.enabled = true;
-        rend.sharedMaterial = alive;
+        //rend = GetComponent<Renderer>();
+        //rend.enabled = true;
+        //rend.sharedMaterial = alive;
         currentPlayerHP = maxPlayerHP;
-        playerHealthBar.SetMaxHealth(maxPlayerHP);
+        //playerHealthBar.SetMaxHealth(maxPlayerHP);
     }
     private void Update()
     {
@@ -52,14 +54,14 @@ public class Player : MonoBehaviour
             {
                 currentPlayerHP = Mathf.Clamp(currentPlayerHP, 0, maxPlayerHP);
                 isDead = true;
-                rend = GetComponent<Renderer>();
-                rend.enabled = true;
-                rend.sharedMaterial = dead;
+                //rend = GetComponent<Renderer>();
+                //rend.enabled = true;
+                //rend.sharedMaterial = dead;
             }
         }
 
-        movement.x = Input.GetAxis("Horizontal");
-        movement.z = Input.GetAxis("Vertical");
+        //movement.x = Input.GetAxis("Horizontal");
+        //movement.z = Input.GetAxis("Vertical");
 
         Ray cameraRay = cam.ScreenPointToRay(Input.mousePosition);
         Plane groundPlane = new Plane(Vector3.up, Vector3.zero);
@@ -71,16 +73,20 @@ public class Player : MonoBehaviour
 
         if (Input.GetMouseButtonUp(0) && !isDead)
         {
-            ShootMagic();
+            Attack();
         } 
     }
 
     private void FixedUpdate()
     {
-        rb.MovePosition(rb.position + movement * speed * Time.fixedDeltaTime);
+        horizontalMove = Input.GetAxis("Horizontal") * speed;
+        verticalMove = Input.GetAxis("Vertical") * speed;
+        rb.velocity=new Vector3(horizontalMove,0, verticalMove);
+        float movement = horizontalMove + verticalMove;
+        anim.SetFloat("Run", Mathf.Abs(movement));
     }
 
-    void ShootMagic()
+    void Attack()
     {
         int critAttack = Random.Range(1, 101);
         if (critAttack <= percentsToplayerAttackCritChance)
@@ -88,10 +94,20 @@ public class Player : MonoBehaviour
             float newAttack = playerAttack / critChancePercentFormAttack;
             newAttack += playerAttack;
         }
-        GameObject magic = Instantiate(magicPref, firePoint.position, firePoint.rotation);
-        Rigidbody rbMagic = magic.GetComponent<Rigidbody>();
-        rbMagic.AddForce(firePoint.forward * magicForce, ForceMode.Impulse);
-        Destroy(magic,1f);
+        //GameObject magic = Instantiate(magicPref, firePoint.position, firePoint.rotation);
+        //Rigidbody rbMagic = magic.GetComponent<Rigidbody>();
+        //rbMagic.AddForce(firePoint.forward * magicForce, ForceMode.Impulse);
+        //Destroy(magic,1f);
+        if((verticalMove == 0) && (horizontalMove  == 0))
+        {
+            StartCoroutine(NormalAttack());
+            
+            
+        }
+        else
+        {
+            StartCoroutine(RunAttack());
+        }
     }
 
     public void PlayerGetDamage(int damage)
@@ -99,10 +115,25 @@ public class Player : MonoBehaviour
         currentPlayerHP = currentPlayerHP - (damage - defend);
     }
 
-
     public void TakeHpFromPlayer(int damage)
     {
         currentPlayerHP -= damage;
-        playerHealthBar.SetHealth(currentPlayerHP);
+        //playerHealthBar.SetHealth(currentPlayerHP);
+    }
+
+    IEnumerator RunAttack()
+    {
+        anim.SetTrigger("RunAttack");
+        yield return new WaitForSeconds(0.5f);
+        speed = 0;
+        yield return new WaitForSeconds(1.5f);
+        speed = 10;
+    }
+    IEnumerator NormalAttack()
+    {
+        speed = 0;
+        anim.SetTrigger("Attack");
+        yield return new WaitForSeconds(1f);
+        speed = 10;
     }
 }
