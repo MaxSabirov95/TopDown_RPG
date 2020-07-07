@@ -26,7 +26,6 @@ public class Player : MonoBehaviour
     public PlayerHealthBar playerHealthBar;
 
     private Rigidbody rb;
-    //private Vector3 movement;
     private float rayLength;
     public bool isDead;
 
@@ -79,11 +78,17 @@ public class Player : MonoBehaviour
 
     private void FixedUpdate()
     {
-        horizontalMove = Input.GetAxis("Horizontal") * speed;
-        verticalMove = Input.GetAxis("Vertical") * speed;
-        rb.velocity=new Vector3(horizontalMove,0, verticalMove);
-        float movement = horizontalMove + verticalMove;
-        anim.SetFloat("Run", Mathf.Abs(movement));
+        horizontalMove = Input.GetAxis("Horizontal");
+        verticalMove = Input.GetAxis("Vertical");
+        rb.velocity=new Vector3(horizontalMove , 0 , verticalMove) * speed;
+        if(horizontalMove!=0 || verticalMove != 0)
+        {
+            anim.SetBool("Move", true);
+        }
+        else
+        {
+            anim.SetBool("Move", false);
+        }
     }
 
     void Attack()
